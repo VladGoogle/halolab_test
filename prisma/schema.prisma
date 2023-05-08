@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sensor {
+  id          Int          @id @default(autoincrement())
+  group       Group        @relation(fields: [groupId], references: [id])
+  groupId     Int
+  codename    String
+  coordinates Coordinates?
+  DOR         Int
+  sensorData  SensorData?
+}
+
+model Coordinates {
+  sensor   Sensor @relation(fields: [sensorId], references: [id])
+  sensorId Int    @unique
+  x_coord  Float
+  y_coord  Float
+  z_coord  Float
+
+  @@id([sensorId])
+}
+
+model Group {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  sensors Sensor[]
+}
+
+model SensorData {
+  sensor       Sensor        @relation(fields: [sensorId], references: [id])
+  sensorId     Int           @unique
+  transparency Int
+  temperature  Float
+  fishes       FishSpecies[]
+
+  @@id([sensorId])
+}
+
+model FishSpecies {
+  sensorData SensorData @relation(fields: [sensorId], references: [sensorId])
+  sensorId   Int        @unique
+  type       String
+  count      Int
+
+  @@id([sensorId])
+}
