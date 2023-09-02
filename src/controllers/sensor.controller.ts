@@ -28,7 +28,7 @@ export class SensorController {
     });
   }
 
-  @Post(':id/sensors')
+  @Post('sensors')
   async updateSensorData() {
     return await this.sensorProducer.pushUpdateAction();
   }

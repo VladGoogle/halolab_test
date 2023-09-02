@@ -52,6 +52,8 @@ model FishSpecies {
   sensorId   Int        @unique
   type       String
   count      Int
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   @@id([sensorId])
 }

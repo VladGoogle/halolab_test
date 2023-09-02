@@ -1,8 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  generateRandomIntNumber,
-  generateRandomFloatNumber,
-} from '../utilities/generateNumber.utility';
+import { Injectable } from '@nestjs/common';
+import { generateRandomFloatNumber } from '../utilities/generateNumber.utility';
 import { SensorDto } from '../dtos/sensor.dto';
 import { PrismaService } from '../services/prisma.service';
 import { faker } from '@faker-js/faker';
@@ -73,34 +70,44 @@ export class SensorQueries {
 
   async updateSensorData(id: number) {
     try {
-      return await this.prisma.sensorData.upsert({
+      const res = await this.prisma.sensorData.upsert({
         where: { sensorId: id },
         update: {
-          transparency: generateRandomIntNumber(0, 100),
-          temperature: generateRandomFloatNumber(),
+          transparency: faker.number.int(100),
+          temperature: faker.number.float({
+            min: 0,
+            max: 100,
+            precision: 0.01,
+          }),
           fishes: {
             update: {
               where: { sensorId: id },
               data: {
                 type: faker.animal.fish(),
-                count: generateRandomIntNumber(0, 100),
+                count: faker.number.int(200),
               },
             },
           },
         },
         create: {
           sensorId: id,
-          transparency: generateRandomIntNumber(0, 100),
-          temperature: generateRandomFloatNumber(),
+          transparency: faker.number.int(100),
+          temperature: faker.number.float({
+            min: 0,
+            max: 100,
+            precision: 0.01,
+          }),
           fishes: {
             create: {
               type: faker.animal.fish(),
-              count: generateRandomIntNumber(0, 100),
+              count: faker.number.int(200),
             },
           },
         },
       });
+      console.log(res);
     } catch (e) {
+      console.log(e);
       throw e;
     }
   }
